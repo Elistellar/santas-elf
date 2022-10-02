@@ -45,8 +45,8 @@ async def help(interaction: Interaction):
         title="Liste des commandes",
         description="- </join:1025814910300594216> : Participe au Secret Santa !\n" + \
                     "- </leave:1025814910300594217> : Supprime ta participation au Secret Santa\n" + \
-                    "- </list:1025814910300594218> : Supprime ta participation au Secret Santa\n" + \
-                    "- </secrect:1025814910300594220> : Supprime ta participation au Secret Santa"
+                    "- </list:1025814910300594218> : Affiche la liste des participants\n" + \
+                    "- </secrect:1025814910300594220> : Affiche le nom de la personne à qui tu vas offrir un cadeau"
     ))
 
 @bot.tree.command(name="join", description="Participe au Secret Santa !")
