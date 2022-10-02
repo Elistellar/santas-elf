@@ -86,6 +86,8 @@ async def list_users(interaction: Interaction):
 
 @bot.tree.command(name="roll", description="Lance le tirage au sort")
 async def roll(interaction: Interaction):
+    Database.delete("pairs")
+    
     current_users = Database.select("users", ["user_id"])
     
     from_ids = [u["user_id"] for u in current_users]
