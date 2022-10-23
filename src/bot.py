@@ -110,4 +110,4 @@ async def secret(interaction: Interaction):
         return
     
     data = Database.select("pairs", ["to_id"], where=f"from_id='{interaction.user.id}'")
-    await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>")
+    await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>", ephemeral=True)
