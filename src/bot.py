@@ -148,6 +148,4 @@ async def lunch(interaction: Interaction):
             minute=lunch.minute
         )
     
-    timestamp = datetime( year=now.year, month=now.month, day=now.day, hour=22).timestamp()
-    
     await interaction.response.send_message(choice(lunch_sentences).format(ts=int(timestamp)))
