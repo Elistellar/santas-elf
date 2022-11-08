@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import traceback
-from random import shuffle
+from datetime import datetime, time
+from random import choice, shuffle
 
-from discord import Embed, Intents, Interaction, Activity, ActivityType  
+from discord import Activity, ActivityType, Embed, Intents, Interaction
 from discord.ext.commands import Bot
 
 from .config import Config
@@ -15,6 +16,20 @@ bot = Bot(
     command_prefix="/",
     intents=Intents.all(),
     owner_id=Config["owner_id"]
+)
+
+lunch_times = (
+    (time(hour=12, minute=33), time(hour=18, minute=36)), # Monday
+    (time(hour=11, minute=36), time(hour=19, minute=12)),
+    (time(hour=12, minute=3 ), time(hour=19, minute=6 )), # ...
+    (time(hour=11, minute=18), time(hour=19, minute=4 )),
+    (time(hour=12, minute=12), time(hour=18, minute=25))  # Friday
+)
+
+lunch_sentences = (
+    "Le prochain repas est à <t:{ts}:t> (<t:{ts}:R>).",
+    "Tu pourras te rassasier <t:{ts}:R>, à <t:{ts}:t>.",
+    "Il te reste <t:{ts}:R> avant de pouvoir aller manger (<t:{ts}:t>)"
 )
 
 # events
@@ -111,3 +126,30 @@ async def secret(interaction: Interaction):
     
     data = Database.select("pairs", ["to_id"], where=f"from_id='{interaction.user.id}'")
     await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>", ephemeral=True)
+
+@bot.command(name="manger", description="Affiche l'heure du prochain repas")
+async def lunch(interaction: Interaction):
+    now = datetime.now()
+    
+    lunch, dinner = lunch_times[now.weekday()]
+    
+    if now.time() > lunch:
+        timestamp = datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=dinner.hour,
+            minute=dinner.minute
+        )
+    else:
+        timestamp = datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=lunch.hour,
+            minute=lunch.minute
+        )
+    
+    timestamp = datetime( year=now.year, month=now.month, day=now.day, hour=22).timestamp()
+    
+    await interaction.response.send_message(choice(lunch_sentences).format(ts=timestamp))
