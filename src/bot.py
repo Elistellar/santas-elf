@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import traceback
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from random import choice, shuffle
 
 from discord import Activity, ActivityType, Embed, Intents, Interaction
@@ -28,8 +28,8 @@ lunch_times = (
 
 lunch_sentences = (
     "Le prochain repas est à <t:{ts}:t> (<t:{ts}:R>).",
-    "Tu pourras te rassasier <t:{ts}:R>, à <t:{ts}:t>.",
-    "Il te reste <t:{ts}:R> avant de pouvoir aller manger (<t:{ts}:t>)"
+    "Tu pourras te rassasier <t:{ts}:R> (à <t:{ts}:t>).",
+    "Ton estomac pourra se remplir <t:{ts}:R> (à <t:{ts}:t>)."
 )
 
 # events
@@ -131,8 +131,17 @@ async def lunch(interaction: Interaction):
     
     lunch, dinner = lunch_times[now.weekday()]
     
-    if now.time() > lunch:
-        timestamp = datetime(
+    
+    if now.time() < lunch:
+        date = datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=lunch.hour,
+            minute=lunch.minute
+        )
+    elif now.time() < dinner:
+        date = datetime(
             year=now.year,
             month=now.month,
             day=now.day,
@@ -140,7 +149,10 @@ async def lunch(interaction: Interaction):
             minute=dinner.minute
         )
     else:
-        timestamp = datetime(
+        lunch, _ = lunch_times[(now.weekday() + 1) % 5]
+        now += timedelta(days=1)
+        
+        date = datetime(
             year=now.year,
             month=now.month,
             day=now.day,
@@ -148,4 +160,4 @@ async def lunch(interaction: Interaction):
             minute=lunch.minute
         )
     
-    await interaction.response.send_message(choice(lunch_sentences).format(ts=int(timestamp)))
+    await interaction.response.send_message(choice(lunch_sentences).format(ts=int(date.timestamp())))
