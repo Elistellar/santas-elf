@@ -56,7 +56,7 @@ async def help(interaction: Interaction):
     await interaction.response.send_message(embed=Embed(
         title="Liste des commandes",
         description= "\n".join([
-            "- {mention} : {desc}" 
+            f"- {command.mention} : {command.description}" 
             for command in await bot.tree.fetch_commands()
             if command.id != 1025814910300594219
         ])
