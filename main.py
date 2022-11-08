@@ -3,7 +3,7 @@ import traceback
 # Logger
 from src.log import log
 
-log.info('Starting Axolotl ...')
+log.info("Starting Santa's Elf...")
 
 try:
     # Config

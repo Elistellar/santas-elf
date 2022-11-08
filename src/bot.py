@@ -34,10 +34,7 @@ lunch_sentences = (
 
 # events
 @bot.event
-async def on_ready():
-    
-    bot.guild = bot.get_guild(Config["guild_id"])
-    
+async def on_ready():    
     # sync slash commands
     await bot.tree.sync()
     
@@ -46,7 +43,7 @@ async def on_ready():
         type=ActivityType.watching,
         name=Config["activity"]
     ))
-    
+        
     log.info("Bot ready !")
     
 @bot.event
@@ -55,13 +52,14 @@ async def on_error(event, *args, **kwargs):
 
 @bot.tree.command(name="help", description="Affiche la liste des commandes")
 async def help(interaction: Interaction):
-    
+        
     await interaction.response.send_message(embed=Embed(
         title="Liste des commandes",
-        description="- </join:1025814910300594216> : Participe au Secret Santa !\n" + \
-                    "- </leave:1025814910300594217> : Supprime ta participation au Secret Santa\n" + \
-                    "- </list:1025814910300594218> : Affiche la liste des participants\n" + \
-                    "- </secrect:1025814910300594220> : Affiche le nom de la personne à qui tu vas offrir un cadeau"
+        description= "\n".join([
+            "- {mention} : {desc}" 
+            for command in await bot.tree.fetch_commands()
+            if command.id != 1025814910300594219
+        ])
     ))
 
 @bot.tree.command(name="join", description="Participe au Secret Santa !")
@@ -127,7 +125,7 @@ async def secret(interaction: Interaction):
     data = Database.select("pairs", ["to_id"], where=f"from_id='{interaction.user.id}'")
     await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>", ephemeral=True)
 
-@bot.command(name="manger", description="Affiche l'heure du prochain repas")
+@bot.tree.command(name="manger", description="Affiche l'heure du prochain repas")
 async def lunch(interaction: Interaction):
     now = datetime.now()
     
@@ -152,4 +150,4 @@ async def lunch(interaction: Interaction):
     
     timestamp = datetime( year=now.year, month=now.month, day=now.day, hour=22).timestamp()
     
-    await interaction.response.send_message(choice(lunch_sentences).format(ts=timestamp))
+    await interaction.response.send_message(choice(lunch_sentences).format(ts=int(timestamp)))
