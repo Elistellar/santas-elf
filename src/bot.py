@@ -159,5 +159,8 @@ async def lunch(interaction: Interaction):
             hour=lunch.hour,
             minute=lunch.minute
         )
+        
+    # idk why, but this line is needed
+    date -= timedelta(hours=1)
     
     await interaction.response.send_message(choice(lunch_sentences).format(ts=int(date.timestamp())))
