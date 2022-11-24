@@ -147,6 +147,8 @@ async def night_time_response(interaction: Interaction):
 
 @bot.tree.command(name="manger", description="Affiche l'heure du prochain repas")
 async def lunch(interaction: Interaction):
+    global last_exec, cooldown
+    
     now = datetime.now()
     
     if now.time() < last_exec + cooldown:
@@ -194,7 +196,7 @@ async def lunch(interaction: Interaction):
 
 @tasks.loop(minutes=1)
 async def reset_cooldown():
-    global last_exec
+    global last_exec, cooldown
     
     now = datetime.now()
     lunch, dinner = lunch_times[now.weekday()]
