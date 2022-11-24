@@ -26,10 +26,21 @@ lunch_times = (
     (time(hour=12, minute=12), time(hour=18, minute=25))  # Friday
 )
 
+night_time = (
+    time(hour=23, minute=30),
+    time(hour=6, minute=00),
+)
+
 lunch_sentences = (
     "Le prochain repas est à <t:{ts}:t> (<t:{ts}:R>).",
     "Tu pourras te rassasier <t:{ts}:R> (à <t:{ts}:t>).",
     "Ton estomac pourra se remplir <t:{ts}:R> (à <t:{ts}:t>)."
+)
+
+night_sentences = (
+    "Si tu as si faim, ouvre ton frigo et arrète de spam.",
+    "Gros morfal, attend encore quelques heures !",
+    "A cette heure là ? Il serait temps d'aller dormir."
 )
 
 # events
@@ -125,6 +136,9 @@ async def secret(interaction: Interaction):
     data = Database.select("pairs", ["to_id"], where=f"from_id='{interaction.user.id}'")
     await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>", ephemeral=True)
 
+async def night_time_response(interaction: Interaction):
+    await interaction.response.send_message(choice(night_sentences))
+
 @bot.tree.command(name="manger", description="Affiche l'heure du prochain repas")
 async def lunch(interaction: Interaction):
     now = datetime.now()
@@ -133,6 +147,9 @@ async def lunch(interaction: Interaction):
     
     
     if now.time() < lunch:
+        if now.time() < night_time[1]:
+            return await night_time_response(interaction)
+        
         date = datetime(
             year=now.year,
             month=now.month,
@@ -149,6 +166,9 @@ async def lunch(interaction: Interaction):
             minute=dinner.minute
         )
     else:
+        if now.time() > night_time[0]:
+            return await night_time_response(interaction)
+        
         lunch, _ = lunch_times[(now.weekday() + 1) % 5]
         now += timedelta(days=1)
         
