@@ -45,7 +45,7 @@ night_sentences = (
 )
 
 cooldown = timedelta(minutes=20)
-last_exec = datetime.now().time() - cooldown
+last_exec = datetime.now() - cooldown
 
 # events
 @bot.event
@@ -198,7 +198,6 @@ async def reset_cooldown():
     
     now = datetime.now()
     lunch, dinner = lunch_times[now.weekday()]
-    now = now.time()
     
     if now - timedelta(minutes=1) <= lunch <= now \
     or now - timedelta(minutes=1) <= dinner <= now:
