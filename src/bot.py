@@ -151,7 +151,7 @@ async def lunch(interaction: Interaction):
     
     now = datetime.now()
     
-    if now.time() < last_exec + cooldown:
+    if now < last_exec + cooldown:
         return await interaction.response.send_message("La commande a déjà été executée un peu plus tôt, regarde juste au dessus.", ephemeral=True)
     
     lunch, dinner = lunch_times[now.weekday()]
@@ -192,7 +192,7 @@ async def lunch(interaction: Interaction):
         )
     
     await interaction.response.send_message(choice(lunch_sentences).format(ts=int(date.timestamp())))
-    last_exec = now.time()
+    last_exec = now
 
 @tasks.loop(minutes=1)
 async def reset_cooldown():
