@@ -73,6 +73,7 @@ async def help(interaction: Interaction):
         ])
     ))
 
+# Secret Santa
 @bot.tree.command(name="join", description="Participe au Secret Santa !")
 async def join(interaction: Interaction):
     
@@ -136,6 +137,7 @@ async def secret(interaction: Interaction):
     data = Database.select("pairs", ["to_id"], where=f"from_id='{interaction.user.id}'")
     await interaction.response.send_message(f"La personne qui t'a été attribuée est : <@{data[0]['to_id']}>", ephemeral=True)
 
+# /manger
 async def night_time_response(interaction: Interaction):
     await interaction.response.send_message(choice(night_sentences))
 
