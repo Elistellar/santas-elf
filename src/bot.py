@@ -6,6 +6,7 @@ from random import choice, shuffle
 
 from discord import Activity, ActivityType, Embed, Intents, Interaction
 from discord.ext.commands import Bot
+from discord.ext import tasks
 
 from .config import Config
 from .database import Database
@@ -42,6 +43,9 @@ night_sentences = (
     "Gros morfal, attend encore quelques heures !",
     "A cette heure là ? Il serait temps d'aller dormir."
 )
+
+cooldown = timedelta(minute=20)
+last_exec = datetime.now().time() - cooldown
 
 # events
 @bot.event
@@ -145,6 +149,9 @@ async def night_time_response(interaction: Interaction):
 async def lunch(interaction: Interaction):
     now = datetime.now()
     
+    if now.time() < last_exec + cooldown:
+        return await interaction.response.send_message("La commande a déjà été executée un peu plus tôt, regarde juste au dessus.", ephemeral=True)
+    
     lunch, dinner = lunch_times[now.weekday()]
     
     
@@ -183,3 +190,16 @@ async def lunch(interaction: Interaction):
         )
     
     await interaction.response.send_message(choice(lunch_sentences).format(ts=int(date.timestamp())))
+    last_exec = now.time()
+
+@tasks.loop(minutes=1)
+async def reset_cooldown():
+    global last_exec
+    
+    now = datetime.now()
+    lunch, dinner = lunch_times[now.weekday()]
+    now = now.time()
+    
+    if now - timedelta(minutes=1) <= lunch <= now \
+    or now - timedelta(minutes=1) <= dinner <= now:
+        last_exec = now - cooldown
