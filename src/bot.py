@@ -44,7 +44,7 @@ night_sentences = (
     "A cette heure là ? Il serait temps d'aller dormir."
 )
 
-cooldown = timedelta(minute=20)
+cooldown = timedelta(minutes=20)
 last_exec = datetime.now().time() - cooldown
 
 # events
