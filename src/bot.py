@@ -58,7 +58,12 @@ async def on_ready():
         type=ActivityType.watching,
         name=Config["activity"]
     ))
-        
+    
+    log.info("DATA :")
+    s = Database.select("pairs")
+    for pair in s:
+        log.info(pair["from_id"], pair["to_id"])
+    
     log.info("Bot ready !")
     
 @bot.event
